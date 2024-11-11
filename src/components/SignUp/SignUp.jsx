@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase.init";
 import { useState } from "react";
+import { FaEye } from "react-icons/fa";
 
 const SignUp = () => {
 
@@ -13,12 +14,24 @@ const SignUp = () => {
         const password = e.target.password.value;
         console.log(email, password)
 
+        // reset value 
+        setUsererror(false)
         setUsererror('')
 
         if(password.length < 6){
             setUsererror('the pasword should be 6 cherecter or more')
             return;
         }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if(!passwordRegex.test(password)){
+            setUsererror('At least one uppercase, one lowercase, one number, one special character')
+            return;
+        }
+
+
+
         createUserWithEmailAndPassword(auth, email, password)
         .then(result => {
             console.log(result)
@@ -52,7 +65,7 @@ const SignUp = () => {
               required
             />
           </div>
-          <div className="form-control">
+          <div className="form-control relative">
             <label className="label">
               <span className="label-text">Password</span>
             </label>
@@ -63,6 +76,9 @@ const SignUp = () => {
               className="input input-bordered"
               required
             />
+            <button onClick={handelshowpassword} className="btn absolute right-2 top-9  rounded-full">
+                <FaEye></FaEye>
+            </button>
             <label className="label">
               <a href="#" className="label-text-alt link link-hover">
                 Forgot password?
@@ -74,7 +90,10 @@ const SignUp = () => {
           </div>
         </form>
         {
-            usererror && <p className="text-red-500 mx-auto m-5">{usererror}</p>
+            usererror && <p className="text-red-500 text-center m-5">{usererror}</p>
+        }
+        {
+            success && <p className="text-green-600 text-center">Sign up is success</p>
         }
       </div>
     </>
