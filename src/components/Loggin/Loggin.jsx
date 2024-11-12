@@ -1,6 +1,6 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase.init";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 
@@ -8,6 +8,7 @@ const Loggin = () => {
 
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('')
+    const emailRef = useRef()
 
     const handelLogginButton = (e)=>{
         e.preventDefault()
@@ -28,7 +29,7 @@ const Loggin = () => {
 
             if(!result.user.emailVerified){
                 setError("Please varify your email address")
-                return;
+                return; 
             }
 
             setSuccess(true)
@@ -41,6 +42,21 @@ const Loggin = () => {
         })
         
 
+    }
+
+    const handelForgetPassword = () =>{
+      console.log('handel forget password', emailRef.current.value)
+      const email = emailRef.current.value;
+      if(!email){
+        console.log("please provide a valid email address")
+        setError('please provide email address')
+        return
+      }else{
+        sendPasswordResetEmail(auth, email)
+        .then(()=>{
+          alert("password reset email sent")
+        })
+      }
     }
 
 
@@ -66,6 +82,7 @@ const Loggin = () => {
                 placeholder="email"
                 className="input input-bordered"
                 name="email"
+                ref={emailRef}
                 required
               />
             </div>
@@ -80,7 +97,7 @@ const Loggin = () => {
                 className="input input-bordered"
                 required
               />
-              <label className="label">
+              <label onClick={handelForgetPassword} className="label">
                 <a href="#" className="label-text-alt link link-hover">
                   Forgot password?
                 </a>
