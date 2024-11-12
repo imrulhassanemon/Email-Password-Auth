@@ -1,29 +1,107 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase.init";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+
 
 const Loggin = () => {
 
-    
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState('')
+
+    const handelLogginButton = (e)=>{
+        e.preventDefault()
+
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        console.log(email,password)
+
+        // reset function 
+        setSuccess(false)
+        setError('')
+
+        signInWithEmailAndPassword(auth, email, password)
+        .then(result => {
+            console.log('you are valid user', result.user)
+            console.log('Id Created Date:- ', result.user.metadata.creationTime)
+            console.log('Id Last Time signIn:- ', result.user.metadata.lastSignInTime)
+
+            if(!result.user.emailVerified){
+                setError("Please varify your email address")
+                return;
+            }
+
+            setSuccess(true)
+
+
+        })
+        .catch(error => {
+            console.log('It is error', error.message)
+            setError(error.message)
+        })
+        
+
+    }
 
 
   return (
-    <div>
-      <h2 className="text-4xl">Loggin</h2>
-
-      <form>
-        <label className="input input-bordered flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            className="h-4 w-4 opacity-70"
-          >
-            <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-            <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-          </svg>
-          <input type="text" className="grow" placeholder="Email" />
-        </label>
-      </form>
+    <div className="hero bg-base-200 min-h-screen">
+      <div className="hero-content flex-col lg:flex-row-reverse">
+        <div className="text-center lg:text-left">
+          <h1 className="text-5xl font-bold">Login now!</h1>
+          <p className="py-6">
+            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
+            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
+            a id nisi.
+          </p>
+        </div>
+        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+          <form onSubmit={handelLogginButton} className="card-body">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                placeholder="email"
+                className="input input-bordered"
+                name="email"
+                required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                type="password"
+                placeholder="password"
+                name="password"
+                className="input input-bordered"
+                required
+              />
+              <label className="label">
+                <a href="#" className="label-text-alt link link-hover">
+                  Forgot password?
+                </a>
+              </label>
+            </div>
+            <div className="form-control mt-6">
+              <button className="btn btn-primary">Login</button>
+            </div>
+            {
+                success && <p className="text-green-600 text-center">You are successfully Loggin</p>
+            }
+            {
+                error && <p className="text-red-500 text-center">{error}</p>
+            }
+            <div className="text-center">
+                <p>New to this website please </p>
+                 <span className="font-bold"><NavLink  to={'/register2'}>SignUp</NavLink></span>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
